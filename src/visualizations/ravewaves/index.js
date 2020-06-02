@@ -1,11 +1,10 @@
 /* jshint node: true */
 /* globals THREE */
 
-import soundfile from '../../assets/question.mp3'
 window.THREE = require("three");
 
 let scene, renderer, camera, clock, width, height, video;
-let particles, videoWidth, videoHeight, imageCache;
+let particles, imageCache;
 
 const canvas = document.createElement("canvas");
 canvas.style.position = "absolute"
@@ -42,20 +41,10 @@ const init = () => {
 
     onResize();
 
-    // navigator.mediaDevices = navigator.mediaDevices || ((navigator.mozGetUserMedia || navigator.webkitGetUserMedia) ? {
-    //     getUserMedia: (c) => {
-    //         return new Promise(function (y, n) {
-    //             (navigator.mozGetUserMedia || navigator.webkitGetUserMedia).call(navigator, c, y, n);
-    //         });
-    //     }
-    // } : null);
-
     if (navigator.mediaDevices) {
         initAudio();
         initVideo();
-    } else {
-        showAlert();
-    }
+    } 
 
     draw();
     window.addEventListener("resize", onResize);
@@ -76,21 +65,9 @@ const initCamera = () => {
 const initVideo = () => {
     video = document.getElementById("video");
     video.autoplay = true;
-
-    const option = {
-        video: true,
-        audio: false
-    };
-
+    video.crossOrigin = "Anonymous";
     video.play()
     createParticles();
-    // video.addEventListener("loadeddata", () => {
-    //     console.log('here')
-    //     videoWidth = video.videoWidth;
-    //     videoHeight = video.videoHeight;
-
-    //     createParticles();
-    // });
 };
 
 const initAudio = () => {
@@ -98,8 +75,7 @@ const initAudio = () => {
     audio = new THREE.Audio(audioListener);
 
     const audioLoader = new THREE.AudioLoader();
-    // https://www.newgrounds.com/audio/listen/232941
-    audioLoader.load(soundfile, (buffer) => {
+    audioLoader.load("https://ex-reality.s3.amazonaws.com/xenon.mp3", (buffer) => {
         document.body.classList.remove(classNameForLoading);
 
         audio.setBuffer(buffer);
@@ -150,7 +126,7 @@ const getImageData = (image, useCache) => {
     if (useCache && imageCache) {
         return imageCache;
     }
-
+    image.crossOrigin = "Anonymous";
     const w = image.videoWidth;
     const h = image.videoHeight;
 
@@ -189,7 +165,6 @@ const getFrequencyRangeValue = (data, _frequencyRange) => {
 
 const draw = (t) => {
     clock.getDelta();
-    const time = clock.elapsedTime;
 
     let r, g, b;
 
@@ -247,9 +222,6 @@ const draw = (t) => {
     requestAnimationFrame(draw);
 };
 
-const showAlert = () => {
-    document.getElementById("message").classList.remove("hidden");
-};
 
 const onResize = () => {
     width = window.innerWidth;

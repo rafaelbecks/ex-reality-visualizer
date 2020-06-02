@@ -11,8 +11,8 @@
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.1",
-    "glslify": "^7.0.0", //video visualizer
-    "three": "^0.106.2" //video-visalizer
+    "glslify": "^7.0.0",
+    "three": "^0.106.2"
   },
   "scripts": {
     "start": "react-scripts start",

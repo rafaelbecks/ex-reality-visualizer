@@ -30,12 +30,12 @@ const AnimationCanvas = styled.canvas`
 `
 
 const ContainerAnimation = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 1 },
   visible: {
-    opacity: 1,
+    opacity: 0,
     scale: 1,
     transition: {
-      delay: 1,
+      delay: 5,
       staggerChildren: 0.1
     }
   }
