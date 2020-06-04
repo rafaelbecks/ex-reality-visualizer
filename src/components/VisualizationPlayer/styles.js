@@ -2,14 +2,14 @@ import styled from 'styled-components';
 import { motion } from "framer-motion";
 
 const Title = styled.h1`
-  font-family: 'Bandeins Strange Variable';
+  font-family: 'Bandeins Strange';
   font-weight: 100;
   font-variation-settings: "wght" 100, "wdth" 350;
   margin: 5px 0;
 `
 
 const SubTitle = styled.h5`
-  font-family: 'Bandeins Strange Variable';
+  font-family: 'Bandeins Strange';
   font-variation-settings: "wght" 100, "wdth" 350;
   margin: 0;
 `

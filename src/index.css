@@ -3,6 +3,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+@font-face {
+  font-family: "Bandeins Strange";
+  src: url("https://ex-reality.s3.amazonaws.com/fonts/BandeinsStrangeVariableGX.ttf");
+  
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
