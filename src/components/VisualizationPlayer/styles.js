@@ -1,5 +1,5 @@
-import styled from 'styled-components';
-import { motion } from "framer-motion";
+import styled from 'styled-components'
+import { motion } from 'framer-motion'
 
 const Title = styled.h1`
   font-family: 'Bandeins Strange';
@@ -39,7 +39,6 @@ const ContainerAnimation = {
       staggerChildren: 0.1
     }
   }
-};
-
+}
 
 export { Title, SubTitle, ContainerAnimation, HiddenVideo, MotionTitle, AnimationCanvas }

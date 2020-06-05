@@ -1,15 +1,15 @@
-import React from 'react';
-import './App.css';
-import VisualizationPlayer from './components/VisualizationPlayer';
+import React from 'react'
+import './App.css'
+import VisualizationPlayer from './components/VisualizationPlayer'
 
-function App() {
+function App () {
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className='App'>
+      <header className='App-header'>
         <VisualizationPlayer />
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

@@ -1,10 +1,9 @@
-import React, { useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react'
 
+const VisualizationPlayer = () => {
+  return (
+    <div />
+  )
+}
 
-const VisualizationPlayer = () =>
-   {
-       return (
-           <div />
-  )};
-
-export default VisualizationPlayer;
+export default VisualizationPlayer

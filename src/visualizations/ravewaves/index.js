@@ -1,146 +1,146 @@
 /* jshint node: true */
 /* globals THREE */
 
-window.THREE = require("three");
+window.THREE = require('three')
 
-let scene, renderer, camera, clock, width, height, video;
-let particles, imageCache;
+let scene, renderer, camera, clock, width, height, video
+let particles, imageCache
 
-const canvas = document.createElement("canvas");
-canvas.style.position = "absolute"
-canvas.style.top = 0;
-canvas.style.left = 0;
+const canvas = document.createElement('canvas')
+canvas.style.position = 'absolute'
+canvas.style.top = 0
+canvas.style.left = 0
 
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext('2d')
 
-const classNameForLoading = "loading";
+const classNameForLoading = 'loading'
 
 // audio
-let audio, analyser;
-const fftSize = 2048;  // https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/fftSize
+let audio, analyser
+const fftSize = 2048 // https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/fftSize
 const frequencyRange = {
-    bass: [20, 140],
-    lowMid: [140, 400],
-    mid: [400, 2600],
-    highMid: [2600, 5200],
-    treble: [5200, 14000],
-};
+  bass: [20, 140],
+  lowMid: [140, 400],
+  mid: [400, 2600],
+  highMid: [2600, 5200],
+  treble: [5200, 14000]
+}
 
 const init = () => {
-    document.body.classList.add(classNameForLoading);
+  document.body.classList.add(classNameForLoading)
 
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x111111);
+  scene = new THREE.Scene()
+  scene.background = new THREE.Color(0x111111)
 
-    renderer = new THREE.WebGLRenderer();
-    document.getElementById("content").appendChild(renderer.domElement);
+  renderer = new THREE.WebGLRenderer()
+  document.getElementById('content').appendChild(renderer.domElement)
 
-    clock = new THREE.Clock();
+  clock = new THREE.Clock()
 
-    initCamera();
+  initCamera()
 
-    onResize();
+  onResize()
 
-    if (navigator.mediaDevices) {
-        initAudio();
-        initVideo();
-    } 
+  if (navigator.mediaDevices) {
+    initAudio()
+    initVideo()
+  }
 
-    draw();
-    window.addEventListener("resize", onResize);
-};
+  draw()
+  window.addEventListener('resize', onResize)
+}
 
 const initCamera = () => {
-    const fov = 45;
-    const aspect = width / height;
+  const fov = 45
+  const aspect = width / height
 
-    camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 10000);
-    const z = Math.min(window.innerWidth, window.innerHeight);
-    camera.position.set(0, 0, z);
-    camera.lookAt(0, 0, 0);
+  camera = new THREE.PerspectiveCamera(fov, aspect, 0.1, 10000)
+  const z = Math.min(window.innerWidth, window.innerHeight)
+  camera.position.set(0, 0, z)
+  camera.lookAt(0, 0, 0)
 
-    scene.add(camera);
-};
+  scene.add(camera)
+}
 
 const initVideo = () => {
-    video = document.getElementById("video");
-    video.autoplay = true;
-    video.crossOrigin = "Anonymous";
-    video.play()
-    createParticles();
-};
+  video = document.getElementById('video')
+  video.autoplay = true
+  video.crossOrigin = 'Anonymous'
+  video.play()
+  createParticles()
+}
 
 const initAudio = () => {
-    const audioListener = new THREE.AudioListener();
-    audio = new THREE.Audio(audioListener);
+  const audioListener = new THREE.AudioListener()
+  audio = new THREE.Audio(audioListener)
 
-    const audioLoader = new THREE.AudioLoader();
-    audioLoader.load("https://ex-reality.s3.amazonaws.com/xenon.mp3", (buffer) => {
-        document.body.classList.remove(classNameForLoading);
+  const audioLoader = new THREE.AudioLoader()
+  audioLoader.load('https://ex-reality.s3.amazonaws.com/xenon.mp3', (buffer) => {
+    document.body.classList.remove(classNameForLoading)
 
-        audio.setBuffer(buffer);
-        audio.setLoop(true);
-        audio.setVolume(0.5);
-        audio.play();
-    });
+    audio.setBuffer(buffer)
+    audio.setLoop(true)
+    audio.setVolume(0.5)
+    audio.play()
+  })
 
-    analyser = new THREE.AudioAnalyser(audio, fftSize);
+  analyser = new THREE.AudioAnalyser(audio, fftSize)
 
-    document.body.addEventListener('click', function () {
-        if (audio) {
-            if (audio.isPlaying) {
-                audio.pause();
-            } else {
-                audio.play();
-            }
-        }
-    });
-};
+  document.body.addEventListener('click', function () {
+    if (audio) {
+      if (audio.isPlaying) {
+        audio.pause()
+      } else {
+        audio.play()
+      }
+    }
+  })
+}
 
 const createParticles = () => {
-    const imageData = getImageData(video);
-    const geometry = new THREE.Geometry();
-    geometry.morphAttributes = {};  // This is necessary to avoid error.
-    const material = new THREE.PointsMaterial({
-        size: 1,
-        color: 0xff3b6c,
-        sizeAttenuation: false
-    });
+  const imageData = getImageData(video)
+  const geometry = new THREE.Geometry()
+  geometry.morphAttributes = {} // This is necessary to avoid error.
+  const material = new THREE.PointsMaterial({
+    size: 1,
+    color: 0xff3b6c,
+    sizeAttenuation: false
+  })
 
-    for (let y = 0, height = imageData.height; y < height; y += 1) {
-        for (let x = 0, width = imageData.width; x < width; x += 1) {
-            const vertex = new THREE.Vector3(
-                x - imageData.width / 2,
-                -y + imageData.height / 2,
-                0
-            );
-            geometry.vertices.push(vertex);
-        }
+  for (let y = 0, height = imageData.height; y < height; y += 1) {
+    for (let x = 0, width = imageData.width; x < width; x += 1) {
+      const vertex = new THREE.Vector3(
+        x - imageData.width / 2,
+        -y + imageData.height / 2,
+        0
+      )
+      geometry.vertices.push(vertex)
     }
+  }
 
-    particles = new THREE.Points(geometry, material);
-    scene.add(particles);
-};
+  particles = new THREE.Points(geometry, material)
+  scene.add(particles)
+}
 
 const getImageData = (image, useCache) => {
-    if (useCache && imageCache) {
-        return imageCache;
-    }
-    image.crossOrigin = "Anonymous";
-    const w = image.videoWidth;
-    const h = image.videoHeight;
+  if (useCache && imageCache) {
+    return imageCache
+  }
+  image.crossOrigin = 'Anonymous'
+  const w = image.videoWidth
+  const h = image.videoHeight
 
-    canvas.width = w;
-    canvas.height = h;
+  canvas.width = w
+  canvas.height = h
 
-    ctx.translate(w, 0);
-    ctx.scale(-1, 1);
+  ctx.translate(w, 0)
+  ctx.scale(-1, 1)
 
-    ctx.drawImage(image, 0, 0);
-    imageCache = ctx.getImageData(0, 0, w, h);
+  ctx.drawImage(image, 0, 0)
+  imageCache = ctx.getImageData(0, 0, w, h)
 
-    return imageCache;
-};
+  return imageCache
+}
 
 /**
  * https://github.com/processing/p5.js-sound/blob/v0.14/lib/p5.sound.js#L1765
@@ -150,89 +150,85 @@ const getImageData = (image, useCache) => {
  * @returns {number} 0.0 ~ 1.0
  */
 const getFrequencyRangeValue = (data, _frequencyRange) => {
-    const nyquist = 48000 / 2;
-    const lowIndex = Math.round(_frequencyRange[0] / nyquist * data.length);
-    const highIndex = Math.round(_frequencyRange[1] / nyquist * data.length);
-    let total = 0;
-    let numFrequencies = 0;
+  const nyquist = 48000 / 2
+  const lowIndex = Math.round(_frequencyRange[0] / nyquist * data.length)
+  const highIndex = Math.round(_frequencyRange[1] / nyquist * data.length)
+  let total = 0
+  let numFrequencies = 0
 
-    for (let i = lowIndex; i <= highIndex; i++) {
-        total += data[i];
-        numFrequencies += 1;
-    }
-    return total / numFrequencies / 255;
-};
+  for (let i = lowIndex; i <= highIndex; i++) {
+    total += data[i]
+    numFrequencies += 1
+  }
+  return total / numFrequencies / 255
+}
 
 const draw = (t) => {
-    clock.getDelta();
+  clock.getDelta()
 
-    let r, g, b;
+  let r, g, b
 
-    // audio
-    if (analyser) {
-        // analyser.getFrequencyData() would be an array with a size of half of fftSize.
-        const data = analyser.getFrequencyData();
+  // audio
+  if (analyser) {
+    // analyser.getFrequencyData() would be an array with a size of half of fftSize.
+    const data = analyser.getFrequencyData()
 
-        const bass = getFrequencyRangeValue(data, frequencyRange.bass);
-        const mid = getFrequencyRangeValue(data, frequencyRange.mid);
-        const treble = getFrequencyRangeValue(data, frequencyRange.treble);
+    const bass = getFrequencyRangeValue(data, frequencyRange.bass)
+    const mid = getFrequencyRangeValue(data, frequencyRange.mid)
+    const treble = getFrequencyRangeValue(data, frequencyRange.treble)
 
-        r = bass;
-        g = mid;
-        b = treble;
-    }
+    r = bass
+    g = mid
+    b = treble
+  }
 
-    // video
-    if (particles) {
-        particles.material.color.r = 1 - r;
-        particles.material.color.g = 1 - g;
-        particles.material.color.b = 1 - b;
+  // video
+  if (particles) {
+    particles.material.color.r = 1 - r
+    particles.material.color.g = 1 - g
+    particles.material.color.b = 1 - b
 
-        const density = 2;
-        const useCache = parseInt(t) % 2 === 0;  // To reduce CPU usage.
-        const imageData = getImageData(video, useCache);
-        for (let i = 0, length = particles.geometry.vertices.length; i < length; i++) {
-            const particle = particles.geometry.vertices[i];
-            if (i % density !== 0) {
-                particle.z = 10000;
-                continue;
-            }
-            let index = i * 4;
-            let gray = (imageData.data[index] + imageData.data[index + 1] + imageData.data[index + 2]) / 3;
-            let threshold = 300;
-            if (gray < threshold) {
-                if (gray < threshold / 3) {
-                    particle.z = gray * r * 5;
-
-                } else if (gray < threshold / 2) {
-                    particle.z = gray * g * 5;
-
-                } else {
-                    particle.z = gray * b * 5;
-                }
-            } else {
-                particle.z = 10000;
-            }
+    const density = 2
+    const useCache = parseInt(t) % 2 === 0 // To reduce CPU usage.
+    const imageData = getImageData(video, useCache)
+    for (let i = 0, length = particles.geometry.vertices.length; i < length; i++) {
+      const particle = particles.geometry.vertices[i]
+      if (i % density !== 0) {
+        particle.z = 10000
+        continue
+      }
+      const index = i * 4
+      const gray = (imageData.data[index] + imageData.data[index + 1] + imageData.data[index + 2]) / 3
+      const threshold = 300
+      if (gray < threshold) {
+        if (gray < threshold / 3) {
+          particle.z = gray * r * 5
+        } else if (gray < threshold / 2) {
+          particle.z = gray * g * 5
+        } else {
+          particle.z = gray * b * 5
         }
-        particles.geometry.verticesNeedUpdate = true;
+      } else {
+        particle.z = 10000
+      }
     }
+    particles.geometry.verticesNeedUpdate = true
+  }
 
-    renderer.render(scene, camera);
+  renderer.render(scene, camera)
 
-    requestAnimationFrame(draw);
-};
-
+  requestAnimationFrame(draw)
+}
 
 const onResize = () => {
-    width = window.innerWidth;
-    height = window.innerHeight;
+  width = window.innerWidth
+  height = window.innerHeight
 
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(width, height);
+  renderer.setPixelRatio(window.devicePixelRatio)
+  renderer.setSize(width, height)
 
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-};
+  camera.aspect = width / height
+  camera.updateProjectionMatrix()
+}
 
-
-export { init };
+export { init }
