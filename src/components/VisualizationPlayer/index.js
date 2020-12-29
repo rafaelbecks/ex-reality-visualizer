@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { Title, SubTitle, ContainerAnimation, MotionTitle } from './styles'
+import { Header, Container, Title, SubTitle, ContainerAnimation, MotionTitle, LeftSideNav, RightSideNav, Content } from './styles'
 import RaveWavesAnimation from './RaveWavesAnimation'
+import PlayerLayout from './PlayerLayout'
 
 const VisualizationPlayer = () => {
   return (
-    <div id='content'>
+    <Content id='content'>
       <MotionTitle
         variants={ContainerAnimation}
         initial='hidden'
         animate='visible'
       >
-        <Title>
-                ex-reality
+        {/* <Title>
+          ex:reality
         </Title>
-        <SubTitle>rafael dormido</SubTitle>
-        
-        <RaveWavesAnimation />
+        <SubTitle>rafael dormido</SubTitle> */}
       </MotionTitle>
-    </div>
+      <Container>
+        <RaveWavesAnimation />
+      </Container>
+
+    </Content>
   )
 }
 

@@ -7,7 +7,7 @@ const RaveWavesAnimation = () => {
 
   const initStuff = () => {
     console.log('ready to play')
-    init()
+          init()
   }
 
   return (
@@ -16,7 +16,7 @@ const RaveWavesAnimation = () => {
       muted
       crossOrigin='Anonymous'
       autoloop
-      src='https://ex-reality.s3.amazonaws.com/video2.mp4'
+      src='https://ex-reality.s3.amazonaws.com/cp-cropped.mp4'
       ref={videoRef}
       onCanPlay={() => initStuff()}
     />)

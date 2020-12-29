@@ -66,7 +66,11 @@ const initVideo = () => {
   video = document.getElementById('video')
   video.autoplay = true
   video.crossOrigin = 'Anonymous'
-  video.play()
+  video.playbackRate = 0.8;
+      setTimeout(() => {
+          video.play()
+
+      }, 1000)
   createParticles()
 }
 
@@ -75,7 +79,7 @@ const initAudio = () => {
   audio = new THREE.Audio(audioListener)
 
   const audioLoader = new THREE.AudioLoader()
-  audioLoader.load('https://ex-reality.s3.amazonaws.com/xenon.mp3', (buffer) => {
+  audioLoader.load('https://ex-reality.s3.amazonaws.com/synth sketch 4.mp3', (buffer) => {
     document.body.classList.remove(classNameForLoading)
 
     audio.setBuffer(buffer)
