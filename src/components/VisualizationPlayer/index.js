@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { Header, Container, Title, SubTitle, ContainerAnimation, MotionTitle, LeftSideNav, RightSideNav, Content } from './styles'
+import React from 'react'
+import { Container, ContainerAnimation, MotionTitle, Content } from './styles'
 import RaveWavesAnimation from './RaveWavesAnimation'
-import PlayerLayout from './PlayerLayout'
 
 const VisualizationPlayer = () => {
   return (
@@ -11,10 +10,6 @@ const VisualizationPlayer = () => {
         initial='hidden'
         animate='visible'
       >
-        {/* <Title>
-          ex:reality
-        </Title>
-        <SubTitle>rafael dormido</SubTitle> */}
       </MotionTitle>
       <Container>
         <RaveWavesAnimation />

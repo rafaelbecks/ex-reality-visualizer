@@ -1,10 +1,11 @@
 /* jshint node: true */
 /* globals THREE */
 
+import audioFile from '../../fairlight.wav'
 window.THREE = require('three')
 
 let scene, renderer, camera, clock, width, height, video
-let particles, imageCache
+let particles, lissajousCurve, imageCache
 
 const canvas = document.createElement('canvas')
 canvas.style.position = 'absolute'
@@ -44,6 +45,7 @@ const init = () => {
   if (navigator.mediaDevices) {
     initAudio()
     initVideo()
+    initLissajousCurve()
   }
 
   draw()
@@ -67,10 +69,9 @@ const initVideo = () => {
   video.autoplay = true
   video.crossOrigin = 'Anonymous'
   video.playbackRate = 0.8;
-      setTimeout(() => {
-          video.play()
-
-      }, 1000)
+  setTimeout(() => {
+    video.play()
+  }, 1000)
   createParticles()
 }
 
@@ -79,7 +80,7 @@ const initAudio = () => {
   audio = new THREE.Audio(audioListener)
 
   const audioLoader = new THREE.AudioLoader()
-  audioLoader.load('https://ex-reality.s3.amazonaws.com/synth sketch 4.mp3', (buffer) => {
+  audioLoader.load(audioFile, (buffer) => {
     document.body.classList.remove(classNameForLoading)
 
     audio.setBuffer(buffer)
@@ -101,15 +102,29 @@ const initAudio = () => {
   })
 }
 
+const initLissajousCurve = () => {
+  const curveGeometry = new THREE.ParametricGeometry((u, v, target) => {
+    const scale = 150;
+    const x = Math.sin(2 * u) * scale;
+    const y = Math.sin(6 * v) * scale;
+    const z = Math.sin(10 * u + v + clock.getElapsedTime()) * scale;
+    target.set(x, y, z);
+  }, 50, 50);
+
+  const curveMaterial = new THREE.LineBasicMaterial({ color: 0x14e29f });
+  lissajousCurve = new THREE.Line(curveGeometry, curveMaterial);
+  scene.add(lissajousCurve);
+}
+
 const createParticles = () => {
-  const imageData = getImageData(video)
-  const geometry = new THREE.Geometry()
-  geometry.morphAttributes = {} // This is necessary to avoid error.
+  const imageData = getImageData(video);
+  const geometry = new THREE.Geometry();
+  geometry.morphAttributes = {}; // This is necessary to avoid error.
   const material = new THREE.PointsMaterial({
     size: 1,
     color: 0xff3b6c,
     sizeAttenuation: false
-  })
+  });
 
   for (let y = 0, height = imageData.height; y < height; y += 1) {
     for (let x = 0, width = imageData.width; x < width; x += 1) {
@@ -117,33 +132,33 @@ const createParticles = () => {
         x - imageData.width / 2,
         -y + imageData.height / 2,
         0
-      )
-      geometry.vertices.push(vertex)
+      );
+      geometry.vertices.push(vertex);
     }
   }
 
-  particles = new THREE.Points(geometry, material)
-  scene.add(particles)
+  particles = new THREE.Points(geometry, material);
+  scene.add(particles);
 }
 
 const getImageData = (image, useCache) => {
   if (useCache && imageCache) {
-    return imageCache
+    return imageCache;
   }
-  image.crossOrigin = 'Anonymous'
-  const w = image.videoWidth
-  const h = image.videoHeight
+  image.crossOrigin = 'Anonymous';
+  const w = image.videoWidth;
+  const h = image.videoHeight;
 
-  canvas.width = w
-  canvas.height = h
+  canvas.width = w;
+  canvas.height = h;
 
-  ctx.translate(w, 0)
-  ctx.scale(-1, 1)
+  ctx.translate(w, 0);
+  ctx.scale(-1, 1);
 
-  ctx.drawImage(image, 0, 0)
-  imageCache = ctx.getImageData(0, 0, w, h)
+  ctx.drawImage(image, 0, 0);
+  imageCache = ctx.getImageData(0, 0, w, h);
 
-  return imageCache
+  return imageCache;
 }
 
 /**
@@ -154,85 +169,91 @@ const getImageData = (image, useCache) => {
  * @returns {number} 0.0 ~ 1.0
  */
 const getFrequencyRangeValue = (data, _frequencyRange) => {
-  const nyquist = 48000 / 2
-  const lowIndex = Math.round(_frequencyRange[0] / nyquist * data.length)
-  const highIndex = Math.round(_frequencyRange[1] / nyquist * data.length)
-  let total = 0
-  let numFrequencies = 0
+  const nyquist = 48000 / 2;
+  const lowIndex = Math.round(_frequencyRange[0] / nyquist * data.length);
+  const highIndex = Math.round(_frequencyRange[1] / nyquist * data.length);
+  let total = 0;
+  let numFrequencies = 0;
 
   for (let i = lowIndex; i <= highIndex; i++) {
-    total += data[i]
-    numFrequencies += 1
+    total += data[i];
+    numFrequencies += 1;
   }
-  return total / numFrequencies / 255
+  return total / numFrequencies / 255;
 }
 
-const draw = (t) => {
-  clock.getDelta()
+const draw = () => {
+  clock.getDelta();
 
-  let r, g, b
+  let r, g, b;
 
   // audio
   if (analyser) {
     // analyser.getFrequencyData() would be an array with a size of half of fftSize.
-    const data = analyser.getFrequencyData()
+    const data = analyser.getFrequencyData();
 
-    const bass = getFrequencyRangeValue(data, frequencyRange.bass)
-    const mid = getFrequencyRangeValue(data, frequencyRange.mid)
-    const treble = getFrequencyRangeValue(data, frequencyRange.treble)
+    const bass = getFrequencyRangeValue(data, frequencyRange.bass);
+    const mid = getFrequencyRangeValue(data, frequencyRange.mid);
+    const treble = getFrequencyRangeValue(data, frequencyRange.treble);
 
-    r = bass
-    g = mid
-    b = treble
+    r = bass;
+    g = mid;
+    b = treble;
   }
 
   // video
   if (particles) {
-    particles.material.color.r = 1 - r
-    particles.material.color.g = 1 - g
-    particles.material.color.b = 1 - b
+    particles.material.color.r = 1 - r;
+    particles.material.color.g = 1 - g;
+    particles.material.color.b = 1 - b;
 
-    const density = 2
-    const useCache = parseInt(t) % 2 === 0 // To reduce CPU usage.
-    const imageData = getImageData(video, useCache)
+    const density = 2;
+    const useCache = parseInt(clock.elapsedTime) % 2 === 0; // To reduce CPU usage.
+    const imageData = getImageData(video, useCache);
     for (let i = 0, length = particles.geometry.vertices.length; i < length; i++) {
-      const particle = particles.geometry.vertices[i]
+      const particle = particles.geometry.vertices[i];
       if (i % density !== 0) {
-        particle.z = 10000
-        continue
+        particle.z = 10000;
+        continue;
       }
-      const index = i * 4
-      const gray = (imageData.data[index] + imageData.data[index + 1] + imageData.data[index + 2]) / 3
-      const threshold = 300
+      const index = i * 4;
+      const gray = (imageData.data[index] + imageData.data[index + 1] + imageData.data[index + 2]) / 3;
+      const threshold = 300;
       if (gray < threshold) {
         if (gray < threshold / 3) {
-          particle.z = gray * r * 5
+          particle.z = gray * r * 5;
         } else if (gray < threshold / 2) {
-          particle.z = gray * g * 5
+          particle.z = gray * g * 5;
         } else {
-          particle.z = gray * b * 5
+          particle.z = gray * b * 5;
         }
       } else {
-        particle.z = 10000
+        particle.z = 10000;
       }
     }
-    particles.geometry.verticesNeedUpdate = true
+    particles.geometry.verticesNeedUpdate = true;
   }
 
-  renderer.render(scene, camera)
+  // Lissajous curve rotation
+  if (lissajousCurve) {
+    lissajousCurve.rotation.x += 0.01;
+    lissajousCurve.rotation.y += 0.01;
+  }
 
-  requestAnimationFrame(draw)
+  renderer.render(scene, camera);
+
+  requestAnimationFrame(draw);
 }
 
 const onResize = () => {
-  width = window.innerWidth
-  height = window.innerHeight
+  width = window.innerWidth;
+  height = window.innerHeight;
 
-  renderer.setPixelRatio(window.devicePixelRatio)
-  renderer.setSize(width, height)
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(width, height);
 
-  camera.aspect = width / height
-  camera.updateProjectionMatrix()
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
 }
 
-export { init }
+export { init };

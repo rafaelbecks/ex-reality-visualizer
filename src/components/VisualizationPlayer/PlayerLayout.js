@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './player.layout.scss'
+import styles from './player.layout.css'
 
 const PlayerLayout = () => (
   <div className='wrapper'>
