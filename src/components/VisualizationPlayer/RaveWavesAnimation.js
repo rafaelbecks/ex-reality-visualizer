@@ -11,7 +11,7 @@ const RaveWavesAnimation = () => {
   };
 
   useEffect(() => {
-    const setupCamera = async () => {
+    const setupVideo = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (videoRef.current) {
@@ -26,7 +26,7 @@ const RaveWavesAnimation = () => {
       }
     };
 
-    setupCamera();
+    setupVideo();
 
     return () => {
       // Cleanup code if needed

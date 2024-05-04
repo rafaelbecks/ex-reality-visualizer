@@ -1,7 +1,7 @@
 /* jshint node: true */
 /* globals THREE */
 
-import audioFile from '../../fairlight.wav'
+import audioFile from '../../monolithic.wav'
 window.THREE = require('three')
 
 let scene, renderer, camera, clock, width, height, video
@@ -68,7 +68,7 @@ const initVideo = () => {
   video = document.getElementById('video')
   video.autoplay = true
   video.crossOrigin = 'Anonymous'
-  video.playbackRate = 0.8;
+  // video.playbackRate = 0.8;
   setTimeout(() => {
     video.play()
   }, 1000)
